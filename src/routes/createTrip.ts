@@ -2,14 +2,9 @@ import nodemailer from "nodemailer";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat"
-import 'dayjs/locale/pt-br'
 import { prisma } from "../lib/prisma";
 import { getEmailClient } from "../lib/email";
-
-dayjs.locale('pt-br')
-dayjs.extend(localizedFormat)
+import { dayjs } from "../lib/dayjs";
 
 export async function createTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -72,8 +67,8 @@ export async function createTrip(app: FastifyInstance) {
         throw new Error("Horário de finalização da viagem inválido.");
       }
 
-      const formatStartDate = dayjs(starts_at).format('LL')
-      const formatEndDate = dayjs(ends_at).format('LL')
+      const formatStartDate = dayjs(starts_at).format("LL");
+      const formatEndDate = dayjs(ends_at).format("LL");
 
       const confirmationLink = `https://localhost:3333/trips/${trip.id}/confirm`;
 
@@ -91,7 +86,7 @@ export async function createTrip(app: FastifyInstance) {
         subject: `Confirme sua viagem para ${destination} em ${formatStartDate}.`,
         html: `
           <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
-          <p>Você solicitou a criação de uma viagem para <strong>${destination}, Brasil</strong> nas datas <strong>de ${formatStartDate}</strong> até <strong>${formatEndDate}</strong></p>
+          <p>Você solicitou a criação de uma viagem para <strong>${destination}</strong> nas datas <strong>de ${formatStartDate}</strong> até <strong>${formatEndDate}</strong></p>
           <p></p>
           <p>Para confirmar sua viagem, clique no link abaixo:</p>
           <p></p>
