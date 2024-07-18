@@ -21,7 +21,7 @@ export async function createTrip(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const {
         destination,
         starts_at,
@@ -32,7 +32,7 @@ export async function createTrip(app: FastifyInstance) {
       } = request.body;
 
       if (dayjs(starts_at).isBefore(new Date())) {
-        throw new Error("Horário de ínicio da viagem inválido.");
+        return reply.status(400).send({ message: "Horário de ínicio da viagem inválido."});
       }
 
       const trip = await prisma.trip.create({
@@ -64,7 +64,7 @@ export async function createTrip(app: FastifyInstance) {
       });
 
       if (dayjs(ends_at).isBefore(starts_at)) {
-        throw new Error("Horário de finalização da viagem inválido.");
+        return reply.status(400).send({message: "Horário de finalização da viagem inválido."});
       }
 
       const formatStartDate = dayjs(starts_at).format("LL");
@@ -101,7 +101,7 @@ export async function createTrip(app: FastifyInstance) {
 
       console.log(nodemailer.getTestMessageUrl(message));
 
-      return { tripId: trip.id };
+      return reply.status(201).send({ tripId: trip.id });
     }
   );
 }

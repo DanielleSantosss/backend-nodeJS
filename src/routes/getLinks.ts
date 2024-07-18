@@ -13,7 +13,7 @@ export async function getLinks(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
 
       const trip = await prisma.trip.findUnique({
@@ -26,10 +26,10 @@ export async function getLinks(app: FastifyInstance) {
       });
 
       if (!trip) {
-        throw new Error("Atividade não encontrada.");
+        return reply.status(400).send({ message: "Atividade não encontrada."});
       }
 
-      return { links: trip.links };
+      return reply.status(200).send({ links: trip.links });
     }
   );
 }

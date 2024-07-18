@@ -13,7 +13,7 @@ export async function getParticipant(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { participantId } = request.params;
 
       const participant = await prisma.participants.findUnique({
@@ -27,10 +27,10 @@ export async function getParticipant(app: FastifyInstance) {
       });
 
       if (!participant) {
-        throw new Error("Participante não encontrado.");
+        return reply.status(400).send({message: "Participante não encontrado."});
       }
 
-      return { participant };
+      return reply.status(200).send({ participant });
     }
   );
 }

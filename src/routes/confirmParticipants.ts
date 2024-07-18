@@ -13,7 +13,7 @@ export async function confirmParticipants(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { participantId } = request.params;
 
       const participants = await prisma.participants.findUnique({
@@ -23,11 +23,11 @@ export async function confirmParticipants(app: FastifyInstance) {
      })
 
      if (!participants){
-       throw new Error("Participante não encontrado.")
+       return reply.status(400).send({message: "Participante não encontrado."})
      }
 
      if (participants.is_confirmed){
-       throw new Error("Participante já confirmado.")
+       return reply.status(400).send({message: "Participante ja confirmado."})
      }
 
      await prisma.participants.update({
@@ -39,7 +39,7 @@ export async function confirmParticipants(app: FastifyInstance) {
        },
      })
 
-      return {participantId: request.params.participantId}
+      return reply.status(201).send({participantId: request.params.participantId})
     })
       
 }

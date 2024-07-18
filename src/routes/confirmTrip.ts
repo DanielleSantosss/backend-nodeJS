@@ -16,7 +16,7 @@ export async function confirmTrip(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
 
       const trip = await prisma.trip.findUnique({
@@ -33,11 +33,11 @@ export async function confirmTrip(app: FastifyInstance) {
       })
 
       if (!trip) {
-        throw new Error("Viagem não encontrada.")
+        return reply.status(400).send({ message: "Viagem não encontrada." })
       }
 
       if (trip.is_confirmed) {
-        throw new Error("Viagem já confirmada.")
+        return reply.status(400).send({ message: "Viagem ja confirmada." })
       }
 
       await prisma.trip.update({
@@ -86,7 +86,7 @@ export async function confirmTrip(app: FastifyInstance) {
         })
       )
 
-      return {tripId: request.params.tripId}
+      return reply.status(201).send({tripId: request.params.tripId});
     }
   );
 }

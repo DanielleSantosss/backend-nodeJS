@@ -19,7 +19,7 @@ export async function updateTrip(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
       const { destination, starts_at, ends_at } = request.body;
 
@@ -30,15 +30,15 @@ export async function updateTrip(app: FastifyInstance) {
       });
 
       if(!trip) {
-        throw new Error("Viagem não encontrada");
+        return reply.status(400).send({ message: "Viagem não encontrada"});
     }
 
     if (dayjs(starts_at).isBefore(new Date())) {
-        throw new Error("Horário de início da viagem inválido");
+        return reply.status(400).send({ message: "Horário de início da viagem inválido"});
     }
 
     if (dayjs(ends_at).isBefore(starts_at)) {
-        throw new Error("Horário de fim da viagem inválido");
+        return reply.status(400).send({ message: "Horário de fim da viagem inválido"});
     }
 
     await prisma.trip.update({
@@ -52,6 +52,6 @@ export async function updateTrip(app: FastifyInstance) {
         },
     });
 
-    return { tripId: trip.id };
+    return reply.status(200).send({ tripId: trip.id });
 });
 }

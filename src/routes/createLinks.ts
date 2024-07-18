@@ -17,7 +17,7 @@ export async function createLink(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
       const { title, url } = request.body;
 
@@ -28,7 +28,7 @@ export async function createLink(app: FastifyInstance) {
       });
 
       if (!trip) {
-        throw new Error("Viagem não encontrada.");
+        return reply.status(400).send({ message: "Viagem não encontrada."});
       }
       
       const link = await prisma.link.create({
@@ -39,7 +39,7 @@ export async function createLink(app: FastifyInstance) {
         },
       });
 
-      return { linkId: link.id };
+      return reply.status(201).send({ linkId: link.id });
     }
   );
 }

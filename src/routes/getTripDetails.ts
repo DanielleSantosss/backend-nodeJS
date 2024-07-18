@@ -13,7 +13,7 @@ export async function getTripDetails(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
 
       const trip = await prisma.trip.findUnique({
@@ -30,10 +30,10 @@ export async function getTripDetails(app: FastifyInstance) {
     });
     
       if (!trip) {
-        throw new Error("Viagem não encontrada.");
+        return reply.status(400).send({ message: "Viagem não encontrada."});
       }
 
-      return { trip };
+      return reply.status(200).send({ trip });
     }
   );
 }

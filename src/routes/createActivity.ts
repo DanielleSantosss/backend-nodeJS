@@ -18,7 +18,7 @@ export async function createActivity(app: FastifyInstance) {
         }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { tripId } = request.params;
       const { title, occurs_at } = request.body;
 
@@ -29,15 +29,15 @@ export async function createActivity(app: FastifyInstance) {
       });
 
       if (!trip) {
-        throw new Error("Viagem não encontrada.");
+        return reply.status(400).send({ message: "Viagem não encontrada. "});
       }
       
       if (dayjs(occurs_at).isBefore(trip.starts_at)) {
-        throw new Error("Horário de início da atividade inválido.");
+        return reply.status(400).send({ message: "Horário de início da atividade inválido."});
       }
 
       if (dayjs(occurs_at).isAfter(trip.ends_at)) {
-        throw new Error("Horário de início da atividade inválido.");
+        return reply.status(400).send({ message: "Horário de início da atividade inválido."});
       }
 
       const activity = await prisma.activity.create({
@@ -48,7 +48,7 @@ export async function createActivity(app: FastifyInstance) {
         },
       });
 
-      return { activityId: activity.id };
+      return reply.status(201).send({ activityId: activity.id });
     }
   );
 }

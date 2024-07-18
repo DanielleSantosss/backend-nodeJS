@@ -31,7 +31,7 @@ export async function getActivities(app: FastifyInstance) {
       });
 
       if (!trip) {
-        throw new Error("Atividade não encontrada.");
+        return reply.status(400).send({ message: "Atividade não encontrada."});
       }
 
 
@@ -51,7 +51,7 @@ export async function getActivities(app: FastifyInstance) {
         }
       })
 
-      return { activities };
+      return reply.status(200).send({ activities });
     }
   );
 }
